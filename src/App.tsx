@@ -1,4 +1,4 @@
-import React, {createContext, useCallback, useContext, useEffect, useRef, useState} from "react";
+import React, {createContext, useCallback, useContext, useEffect, useRef, useState, useSyncExternalStore} from "react";
 
 // TYPE OF STORE
 type Store = {first: string, last: string}
@@ -58,11 +58,7 @@ function useStore(): [
         throw new Error('Store not found')
     }
 
-    const [state, setState] = useState(store.get())
-
-    useEffect(() => {
-        return store.subscribe(() => setState(store.get()))
-    }, [])
+   const state = useSyncExternalStore(store.subscribe, store.get)
 
     return [state, store.set]
 
