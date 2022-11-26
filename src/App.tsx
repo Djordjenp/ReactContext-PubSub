@@ -49,8 +49,8 @@ function Provider({children}: {children: React.ReactNode}) {
     )
 }
 
-function useStore(): [
-    Store,
+function useStore<SelectorOutput>(selector: (store: Store) => SelectorOutput): [
+    SelectorOutput,
     (value: Partial<Store>) => void,
 ] {
     const store = useContext(StoreContext)
@@ -58,29 +58,29 @@ function useStore(): [
         throw new Error('Store not found')
     }
 
-   const state = useSyncExternalStore(store.subscribe, store.get)
+   const state = useSyncExternalStore(store.subscribe, () => selector(store.get()))
 
     return [state, store.set]
 
 }
 
 const TextInput = ({ value }: { value: "first" | "last" }) => {
-    const [store, setStore] = useStore()
+    const [fieldValue, setStore] = useStore((store) => store[value])
     return (
         <div className="field">
             {value}: <input
             value={store[value]}
-            onChange={e => setStore({...store, [value]: e.target.value})}
+            onChange={e => setStore({ [value]: e.target.value})}
         />
         </div>
     );
 };
 
 const Display = ({ value }: { value: "first" | "last" }) => {
-    const [store] = useStore()
+    const [fieldValue] = useStore((store) => store[value])
     return (
         <div className="value">
-            {value}: {store[value]}
+            {value}: {fieldValue}
         </div>
     );
 };
