@@ -69,7 +69,7 @@ const TextInput = ({ value }: { value: "first" | "last" }) => {
     return (
         <div className="field">
             {value}: <input
-            value={store[value]}
+            value={fieldValue}
             onChange={e => setStore({ [value]: e.target.value})}
         />
         </div>
